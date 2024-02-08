@@ -1,10 +1,14 @@
 import React, { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import "./Uploadarea.css";
+import submitFile from "./submit";
 
 function Uploadarea() {
   const onDrop = useCallback((acceptedFiles) => {
     // Do something with the files
+    acceptedFiles.forEach((file) => {
+      submitFile(file); // Call the submitFile function for each accepted file
+    });
   }, []);
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
@@ -19,7 +23,7 @@ function Uploadarea() {
         )}
       </div>
       <div className="checkbutton">
-        <button>Check image</button>
+        <button type="submit">Check image</button>
       </div>
     </div>
   );
