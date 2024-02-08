@@ -13,16 +13,11 @@
   border-radius: 5px;
 }
 
-/* .checkbutton {
-  position: relative;
-  right: 420px;
-
-} */
 button {
   color: #313244;
-  position: relative;
+  /* position: relative;
   top: 10px;
-  right: 405px;
+  right: 405px; */
   background-color: #b4befe; /* Green */
   border: none;
   text-align: center;
@@ -30,7 +25,7 @@ button {
   text-decoration: none;
   display: inline-block;
   font-size: 16px;
-  margin: 4px 2px;
+  margin: 50px 2px;
   cursor: pointer;
   border-radius: 5px;
 }
