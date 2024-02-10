@@ -17,12 +17,12 @@ app.add_middleware(
 )
 
 MODEL_PATH = r'E:\Proposal\Deepfake-detection-project\backend\scripted.pt'
+model = torch.load(MODEL_PATH, map_location=torch.device('cpu'))
 class_labels = ['fake', 'real']  # Replace with your own class labels
 
-def classify_image(image_path, MODEL_PATH, class_labels):
+def classify_image(image_data, MODEL_PATH, class_labels):
     # Load the model
     # model = torch.load(MODEL_PATH)
-    model = torch.load(MODEL_PATH, map_location=torch.device('cpu'))
     model.eval()
     # model.to('cpu')
 
@@ -34,7 +34,7 @@ def classify_image(image_path, MODEL_PATH, class_labels):
     ])
 
     # Load and preprocess the image
-    img = Image.open(io.BytesIO(image_path))
+    img = Image.open(io.BytesIO(image_data))
     img = transform(img)
     img = img.unsqueeze(0)  # Add batch dimension
 
