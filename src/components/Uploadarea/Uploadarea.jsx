@@ -1,18 +1,32 @@
 import React from "react";
 import "./Uploadarea.css";
-import submitFile from "./submitFile"; // Import the submitFile function
 
 function Uploadarea() {
-  const handleSubmit = (e) => {
+  const upload = async (formData) => {
+    try {
+      const response = await fetch("http://127.0.0.1:8000/uploadfile", {
+        method: "POST",
+        body: formData,
+      });
+      const result = await response.json();
+      console.log("Success:", result);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const inpFile = document.getElementById("inpFile");
-    submitFile(inpFile.files[0]); // Call the submitFile function
+    const formData = new FormData();
+    const fileField = document.querySelector('input[type="file"]');
+    formData.append("file", fileField.files[0]);
+    await upload(formData);
   };
 
   return (
-    <form className="form" id="myForm" onSubmit={handleSubmit}>
-      <input type="file" id="inpFile" /> <br />
-      <button type="submit"> Testing</button>
+    <form className="form" onSubmit={handleSubmit}>
+      <input type="file" /> <br />
+      <button type="submit">Upload File</button>
     </form>
   );
 }
