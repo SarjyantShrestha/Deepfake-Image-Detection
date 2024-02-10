@@ -1,15 +1,27 @@
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi import FastAPI, UploadFile, File
 import torch
 from torchvision import transforms
 from PIL import Image
 
-model_path = '/home/rapzy/Downloads/LearnPython/FastApi/scripted.pt'
-image_path = '/home/rapzy/Downloads/monu.png'
+app = FastAPI()
+
+# Allow all origins, methods, and headers for simplicity
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+MODEL_PATH = '/home/rapzy/Downloads/LearnPython/FastApi/scripted.pt'
 class_labels = ['fake', 'real']  # Replace with your own class labels
 
-def classify_image(image_path, model_path, class_labels):
+def classify_image(image_path, MODEL_PATH, class_labels):
     # Load the model
-    # model = torch.load(model_path)
-    model = torch.load(model_path, map_location=torch.device('cpu'))
+    # model = torch.load(MODEL_PATH)
+    model = torch.load(MODEL_PATH, map_location=torch.device('cpu'))
     model.eval()
     # model.to('cpu')
 
@@ -35,6 +47,8 @@ def classify_image(image_path, model_path, class_labels):
 
     return class_labels[predicted_class_index]
 
-# Example usage:
-predicted_class = classify_image(image_path, model_path, class_labels)
-print("Predicted Class:", predicted_class)
+@app.post("/uploadfile/")
+async def create_upload_file(file: UploadFile = File(...)):
+    contents = await file.read()
+    prediction = classify_image(contents, MODEL_PATH, class_labels)
+    return {"prediction": prediction}
