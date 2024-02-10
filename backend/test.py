@@ -3,6 +3,7 @@ from fastapi import FastAPI, UploadFile, File
 import torch
 from torchvision import transforms
 from PIL import Image
+import io
 
 app = FastAPI()
 
@@ -15,7 +16,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-MODEL_PATH = '/home/rapzy/Downloads/LearnPython/FastApi/scripted.pt'
+MODEL_PATH = r'E:\Proposal\Deepfake-detection-project\backend\scripted.pt'
 class_labels = ['fake', 'real']  # Replace with your own class labels
 
 def classify_image(image_path, MODEL_PATH, class_labels):
@@ -33,7 +34,7 @@ def classify_image(image_path, MODEL_PATH, class_labels):
     ])
 
     # Load and preprocess the image
-    img = Image.open(image_path)
+    img = Image.open(io.BytesIO(image_path))
     img = transform(img)
     img = img.unsqueeze(0)  # Add batch dimension
 
