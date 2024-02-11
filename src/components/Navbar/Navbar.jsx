@@ -7,7 +7,7 @@ function Navbar() {
     <div className="header">
       <h1>DeepFake Image Detector</h1>
       <div className="nav">
-        <p id="upload">Upload file</p>
+        {/* <p id="upload">Upload file</p> */}
         <div className="image">
           <a
             id="a"

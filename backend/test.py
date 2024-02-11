@@ -52,4 +52,5 @@ def classify_image(image_data, MODEL_PATH, class_labels):
 async def create_upload_file(file: UploadFile = File(...)):
     contents = await file.read()
     prediction = classify_image(contents, MODEL_PATH, class_labels)
-    return {"prediction": prediction}
+    return {"prediction": prediction,
+            "filename": file.filename}
