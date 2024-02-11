@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import "./Uploadarea.css";
 
 function Uploadarea() {
+  const [classificationResult, setClassificationResult] = useState();
+
   const upload = async (formData) => {
     try {
       const response = await fetch("http://127.0.0.1:8000/uploadfile", {

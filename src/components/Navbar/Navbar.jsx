@@ -11,7 +11,7 @@ function Navbar() {
         <div className="image">
           <a
             id="a"
-            href="https://github.com/SarjyantShrestha/Deep-Fake-Detection-proposal"
+            href="https://github.com/SarjyantShrestha/Deepfake-detection-project"
             target="_self"
           >
             <img id="gitimg" src={githublogo} alt="" />

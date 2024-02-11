@@ -16,7 +16,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-MODEL_PATH = r'E:\Proposal\Deepfake-detection-project\backend\scripted.pt'
+MODEL_PATH = '/home/rapzy/Downloads/Deepfake-Detection-Project/backend/scripted.pt'
 model = torch.load(MODEL_PATH, map_location=torch.device('cpu'))
 class_labels = ['fake', 'real']  # Replace with your own class labels
 
