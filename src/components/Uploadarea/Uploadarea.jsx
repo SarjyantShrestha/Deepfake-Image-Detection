@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import "./Uploadarea.css";
 
 function Uploadarea() {
-  const [classificationResult, setClassificationResult] = useState();
+  const [classificationResult, setClassificationResult] = useState(null);
 
   const upload = async (formData) => {
     try {
@@ -12,6 +12,7 @@ function Uploadarea() {
       });
       const result = await response.json();
       console.log("Success:", result);
+      setClassificationResult(result.prediction); //assuming your backend returns json with a property 'response'
     } catch (error) {
       console.error("Error:", error);
     }
@@ -26,10 +27,15 @@ function Uploadarea() {
   };
 
   return (
-    <form className="form" onSubmit={handleSubmit}>
-      <input type="file" /> <br />
-      <button type="submit">Upload File</button>
-    </form>
+    <div>
+      <form className="form" onSubmit={handleSubmit}>
+        <input className="choose-file" type="file" /> <br />
+        <button type="submit">Upload File</button>
+      </form>
+      {classificationResult !== null && (
+        <p id="result">Classification result: {classificationResult}</p>
+      )}
+    </div>
   );
 }
 

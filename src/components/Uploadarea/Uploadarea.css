@@ -33,3 +33,31 @@ button {
 button:hover {
   background-color: #848dc9; /* Darker Green */
 }
+
+#upload {
+  background-color: rgba(108, 112, 134, 0.1);
+  margin: 0;
+  margin-top: 30px;
+  font-size: 20px;
+  padding: 5px;
+  padding-bottom: 35px;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  border-bottom: 10px;
+  cursor: pointer;
+}
+
+#result {
+  text-align: center;
+}
+
+.form {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.choose-file {
+  margin-top: 100px;
+}

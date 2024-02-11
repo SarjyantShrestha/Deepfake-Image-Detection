@@ -18,7 +18,7 @@ app.add_middleware(
 
 MODEL_PATH = '/home/rapzy/Downloads/Deepfake-Detection-Project/backend/scripted.pt'
 model = torch.load(MODEL_PATH, map_location=torch.device('cpu'))
-class_labels = ['fake', 'real']  # Replace with your own class labels
+class_labels = ['Fake', 'Real']  # Replace with your own class labels
 
 def classify_image(image_data, MODEL_PATH, class_labels):
     # Load the model
