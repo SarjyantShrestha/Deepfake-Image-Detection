@@ -16,11 +16,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-MODEL_PATH = '/home/rapzy/Downloads/Deepfake-Detection-Project/backend/scripted.pt'
-model = torch.load(MODEL_PATH, map_location=torch.device('cpu'))
+# MODEL_PATH = '/home/rapzy/Downloads/Deepfake-Detection-Project/backend/scripted.pt'
+MODEL_PATH2 = '/home/rapzy/Downloads/Deepfake-Detection-Project/backend/resnet9_scripted.pt'
+
+# model1 = torch.load(MODEL_PATH, map_location=torch.device('cpu'))
+model2 = torch.load(MODEL_PATH2, map_location=torch.device('cpu'))
 class_labels = ['Fake', 'Real']  # Replace with your own class labels
 
-def classify_image(image_data, MODEL_PATH, class_labels):
+def classify_image(image_data, model, class_labels):
     # Load the model
     # model = torch.load(MODEL_PATH)
     model.eval()
@@ -30,7 +33,8 @@ def classify_image(image_data, MODEL_PATH, class_labels):
     transform = transforms.Compose([
         transforms.Resize((128, 128)),
         transforms.ToTensor(),
-        transforms.Normalize(mean=[0.5186, 0.4302, 0.3818], std=[0.2998, 0.2743, 0.2720]),
+        # transforms.Normalize(mean=[0.5186, 0.4302, 0.3818], std=[0.2998, 0.2743, 0.2720]), # Resnet 9
+        transforms.Normalize(mean=[0.5202, 0.4318, 0.3835], std=[0.2987, 0.2736, 0.2719]), # New 93.8
     ])
 
     # Load and preprocess the image
@@ -51,6 +55,7 @@ def classify_image(image_data, MODEL_PATH, class_labels):
 @app.post("/uploadfile/")
 async def create_upload_file(file: UploadFile = File(...)):
     contents = await file.read()
-    prediction = classify_image(contents, MODEL_PATH, class_labels)
-    return {"prediction": prediction,
-            "filename": file.filename}
+    # prediction = classify_image(contents, model1, class_labels)
+    prediction2 = classify_image(contents, model2, class_labels)
+    return {"filename": file.filename,
+            "prediction2": prediction2}

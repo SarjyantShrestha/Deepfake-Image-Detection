@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import "./Uploadarea.css";
 
 function Uploadarea() {
-  const [classificationResult, setClassificationResult] = useState(null);
+  // const [classificationResult1, setClassificationResult1] = useState(null);
+  const [classificationResult2, setClassificationResult2] = useState(null);
   const [loading, setLoading] = useState(false);
   const [filename, setFilename] = useState("No image chosen");
   const [imageURL, setImageURL] = useState(null);
@@ -28,7 +29,8 @@ function Uploadarea() {
       });
       const result = await response.json();
       console.log("Success:", result);
-      setClassificationResult(result.prediction);
+      // setClassificationResult1(result.prediction);
+      setClassificationResult2(result.prediction2);
       // setTimeout(() => {
       //   setClassificationResult(null);
       // }, 4000); //reset after 3 seconds
@@ -40,7 +42,8 @@ function Uploadarea() {
   };
 
   const handleSubmit = async (e) => {
-    setClassificationResult(null);
+    // setClassificationResult1(null);
+    setClassificationResult2(null);
     e.preventDefault();
     const formData = new FormData();
     const fileField = document.querySelector('input[type="file"]');
@@ -52,7 +55,7 @@ function Uploadarea() {
     <div className="maindiv">
       <form className="form" onSubmit={handleSubmit}>
         {/* <input className="choose-file" type="file" /> <br /> */}
-        <label for="file-upload" class="custom-file-input">
+        <label htmlFor="file-upload" className="custom-file-input">
           Choose an image
         </label>
         {imageURL && (
@@ -68,9 +71,11 @@ function Uploadarea() {
         <button type="submit">Upload image</button>
       </form>
       {loading && <p className="result">Processing..</p>}
-      {classificationResult !== null && (
+      {classificationResult2 !== null && (
         <p className="result">
-          Classification result: <span>{classificationResult}</span>
+          {/* Classification result (old): <span>{classificationResult1}</span>
+          <br /> */}
+          Classification result: <span>{classificationResult2}</span>
         </p>
       )}
     </div>
