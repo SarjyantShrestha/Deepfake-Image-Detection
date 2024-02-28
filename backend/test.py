@@ -79,7 +79,7 @@ def classify_image(image_data, model, class_labels):
 
     targets = [ClassifierOutputTarget(0)] 
     target_layers = [model.features[-2]]# instantiate the model
-    cam = GradCAM(model=model, target_layers=target_layers) # use GradCamPlusPlus class
+    cam = GradCAMPlusPlus(model=model, target_layers=target_layers) # use GradCamPlusPlus class
 
     # Preprocess input image, get the input image tensor
     img = np.array(PIL.Image.open(io.BytesIO(image_data)))
@@ -97,17 +97,18 @@ def classify_image(image_data, model, class_labels):
     # # display the original image & the associated CAM
     # images = np.hstack((np.uint8(255*img), cam_image))
     # PIL.Image.fromarray(images)
+    
 
-    return class_labels[predicted_class_index]
+    return class_labels[predicted_class_index],cam.tolist()
 
 @app.post("/uploadfile/")
 async def create_upload_file(file: UploadFile = File(...)):
     contents = await file.read()
-    prediction = classify_image(contents, model, class_labels)
+    prediction,cam = classify_image(contents, model, class_labels)
     # prediction2,cam_image = classify_image(contents, model, class_labels)
     return {"filename": file.filename,
-            "prediction2": prediction,
-            # "cam_image": cam_image
+            "prediction": prediction,
+            "cam_image": cam
             }
 
 
