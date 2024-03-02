@@ -103,3 +103,8 @@ span {
   display: block;
   margin-top: 10px;
 }
+
+#finalimage {
+  width: 20%;
+  height: auto;
+}

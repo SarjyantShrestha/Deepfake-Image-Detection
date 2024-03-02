@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./Uploadarea.css";
+import imagesss from "output_image.png";
 
 function Uploadarea() {
   // const [classificationResult1, setClassificationResult1] = useState(null);
@@ -7,6 +8,7 @@ function Uploadarea() {
   const [loading, setLoading] = useState(false);
   const [filename, setFilename] = useState("No image chosen");
   const [imageURL, setImageURL] = useState(null);
+  const [CamImageURL, setCamImageURL] = useState(null);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -30,10 +32,7 @@ function Uploadarea() {
       const result = await response.json();
       console.log("Success:", result);
       // setClassificationResult1(result.prediction);
-      setClassificationResult2(result.prediction2);
-      // setTimeout(() => {
-      //   setClassificationResult(null);
-      // }, 4000); //reset after 3 seconds
+      setClassificationResult2(result.prediction);
     } catch (error) {
       console.error("Error:", error);
     } finally {
@@ -54,7 +53,6 @@ function Uploadarea() {
   return (
     <div className="maindiv">
       <form className="form" onSubmit={handleSubmit}>
-        {/* <input className="choose-file" type="file" /> <br /> */}
         <label htmlFor="file-upload" className="custom-file-input">
           Choose an image
         </label>
@@ -76,6 +74,9 @@ function Uploadarea() {
           {/* Classification result (old): <span>{classificationResult1}</span>
           <br /> */}
           Classification result: <span>{classificationResult2}</span>
+          <br />
+          <br />
+          <img id="finalimage" src={imagesss} alt="" />
         </p>
       )}
     </div>

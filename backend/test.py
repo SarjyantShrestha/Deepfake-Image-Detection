@@ -1,5 +1,6 @@
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, UploadFile, File
+from fastapi.responses import FileResponse
 import torch
 import torchvision
 import uvicorn
@@ -10,9 +11,11 @@ import torch.nn as nn
 from torchvision import transforms
 from PIL import Image
 import io
-from pytorch_grad_cam import GradCAM,GradCAMPlusPlus
+from pytorch_grad_cam import GradCAM, GradCAMPlusPlus, HiResCAM
 from pytorch_grad_cam.utils.model_targets import ClassifierOutputTarget
-from pytorch_grad_cam.utils.image import show_cam_on_image,preprocess_image
+from pytorch_grad_cam.utils.image import show_cam_on_image, preprocess_image
+
+from fastapi.responses import JSONResponse
 
 app = FastAPI()
 
@@ -25,12 +28,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 class CustomResNet50(nn.Module):
     def __init__(self, num_classes=2):
         super(CustomResNet50, self).__init__()
         # Load the pre-trained ResNet-101 model
         # resnet = torchvision.models.resnet50(pretrained=True)
-        resnet = torchvision.models.resnet50(weights='ResNet50_Weights.IMAGENET1K_V1')        
+        resnet = torchvision.models.resnet50(
+            weights='ResNet50_Weights.IMAGENET1K_V1')
         # resnet = torch.load(r'E:\Proposal\Deepfake-detection-project\backend\resnet50-0676ba61.pth')
         # Remove the last fully connected layer
         self.features = nn.Sequential(*list(resnet.children())[:-1])
@@ -45,10 +50,10 @@ class CustomResNet50(nn.Module):
         return x
 
 
-
-MODEL_PATH = r'E:\Proposal\Deepfake-detection-project\backend\resnet50.pt'
+MODEL_PATH = "/home/rapzy/Downloads/Deepfake-Image-Detection/backend/resnet50.pt"
 model = torch.load(MODEL_PATH, map_location=torch.device('cpu'))
 class_labels = ['Fake', 'Real']  # Replace with your own class labels
+
 
 def classify_image(image_data, model, class_labels):
     # Load the model
@@ -61,7 +66,8 @@ def classify_image(image_data, model, class_labels):
         transforms.Resize((128, 128)),
         transforms.ToTensor(),
         # transforms.Normalize(mean=[0.5186, 0.4302, 0.3818], std=[0.2998, 0.2743, 0.2720]), # Resnet 9
-        transforms.Normalize(mean=[0.5202, 0.4318, 0.3835], std=[0.2987, 0.2736, 0.2719]), # New 93.8
+        transforms.Normalize(mean=[0.5202, 0.4318, 0.3835], std=[
+                             0.2987, 0.2736, 0.2719]),  # New 93.8
     ])
 
     # Load and preprocess the image
@@ -77,13 +83,14 @@ def classify_image(image_data, model, class_labels):
     _, predicted = torch.max(output, 1)
     predicted_class_index = predicted.item()
 
-    targets = [ClassifierOutputTarget(0)] 
-    target_layers = [model.features[-2]]# instantiate the model
-    cam = GradCAMPlusPlus(model=model, target_layers=target_layers) # use GradCamPlusPlus class
+    targets = [ClassifierOutputTarget(0)]
+    target_layers = [model.features[-2]]  # instantiate the model
+    # use GradCamPlusPlus class
+    cam = HiResCAM(model=model, target_layers=target_layers)
 
     # Preprocess input image, get the input image tensor
     img = np.array(PIL.Image.open(io.BytesIO(image_data)))
-    img = cv2.resize(img, (128,128))
+    img = cv2.resize(img, (128, 128))
     img = np.float32(img) / 255
     input_tensor = preprocess_image(img)
 
@@ -96,21 +103,20 @@ def classify_image(image_data, model, class_labels):
 
     # # display the original image & the associated CAM
     # images = np.hstack((np.uint8(255*img), cam_image))
-    # PIL.Image.fromarray(images)
-    
+    images = PIL.Image.fromarray(cam_image)
+    images.resize((1024, 1024))
+    images.save('../node_modules/output_image.png')
 
-    return class_labels[predicted_class_index],cam.tolist()
+    return class_labels[predicted_class_index]
+
 
 @app.post("/uploadfile/")
 async def create_upload_file(file: UploadFile = File(...)):
     contents = await file.read()
-    prediction,cam = classify_image(contents, model, class_labels)
-    # prediction2,cam_image = classify_image(contents, model, class_labels)
+    prediction = classify_image(contents, model, class_labels)
     return {"filename": file.filename,
             "prediction": prediction,
-            "cam_image": cam
             }
 
-
-if __name__ == "__main__":    
+if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=8000)
