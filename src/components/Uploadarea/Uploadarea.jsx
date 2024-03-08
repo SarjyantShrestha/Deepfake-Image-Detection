@@ -74,9 +74,11 @@ function Uploadarea() {
           {/* Classification result (old): <span>{classificationResult1}</span>
           <br /> */}
           Classification result: <span>{classificationResult2}</span>
+          {/* <br />
           <br />
+          GradCAM result
           <br />
-          <img id="finalimage" src={imagesss} alt="" />
+          <img id="finalimage" src={imagesss} alt="" /> */}
         </p>
       )}
     </div>
