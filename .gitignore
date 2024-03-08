@@ -25,4 +25,4 @@ yarn-error.log*
 /backend/*.pt
 /backend/*.pth
 /backend/output_image.png
-Pipfile
+./Pipfile
