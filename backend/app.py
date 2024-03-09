@@ -10,7 +10,6 @@ from torchvision import transforms
 from PIL import Image
 import io
 
-from fastapi.responses import JSONResponse
 
 app = FastAPI()
 
