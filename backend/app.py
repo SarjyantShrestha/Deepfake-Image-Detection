@@ -2,8 +2,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, UploadFile, File
 from fastapi.responses import FileResponse
 import torch
-import torchvision
-import uvicorn
 import PIL
 import cv2
 import numpy as np
@@ -11,43 +9,29 @@ import torch.nn as nn
 from torchvision import transforms
 from PIL import Image
 import io
-from pytorch_grad_cam import GradCAM, GradCAMPlusPlus, HiResCAM, LayerCAM
-from pytorch_grad_cam.utils.model_targets import ClassifierOutputTarget
-from pytorch_grad_cam.utils.image import show_cam_on_image, preprocess_image
 
 from fastapi.responses import JSONResponse
 
 app = FastAPI()
 
-# Allow all origins, methods, and headers for simplicity
+# Cross-Origin Resource Sharing (CORS)
+""" CORS is a security feature implemented by web browsers to restrict web pages
+from making requests to a different domain than the one that served the original
+web page. CORS middleware allows you to relax these restrictions and define
+which origins, methods, and headers are allowed for requests to your
+application."""
 app.add_middleware(
     CORSMiddleware,
+    # Requests from any origin will be allowed
     allow_origins=["*"],
+    # Determines whether the browser should include credentials (such as cookies or HTTP authentication) with cross-origin requests.
     allow_credentials=True,
+    # HTTP methods are allowed for cross-origin requests.
     allow_methods=["*"],
+    # All HTTP headers are allowed in cross-origin request.
     allow_headers=["*"],
 )
 
-
-# class CustomResNet50(nn.Module):
-#     def __init__(self, num_classes=2):
-#         super(CustomResNet50, self).__init__()
-#         # Load the pre-trained ResNet-101 model
-#         # resnet = torchvision.models.resnet50(pretrained=True)
-#         resnet = torchvision.models.resnet50(
-#             weights='ResNet50_Weights.IMAGENET1K_V1')
-#         # resnet = torch.load(r'E:\Proposal\Deepfake-detection-project\backend\resnet50-0676ba61.pth')
-#         # Remove the last fully connected layer
-#         self.features = nn.Sequential(*list(resnet.children())[:-1])
-
-#         # Add a new fully connected layer with the desired number of classes
-#         self.fc = nn.Linear(resnet.fc.in_features, num_classes)
-
-#     def forward(self, x):
-#         x = self.features(x)
-#         x = x.view(x.size(0), -1)
-#         x = self.fc(x)
-#         return x
 
 class ResNet9(nn.Module):
     def __init__(self, in_channels, num_classes):
@@ -114,6 +98,7 @@ def classify_image(image_data, model, class_labels):
         # transforms.Normalize(mean=[0.5274, 0.4384, 0.3886], std=[
         #  0.2999, 0.2781, 0.2768]),  # New 93.8
     ])
+
     # Load and preprocess the image
     img = Image.open(io.BytesIO(image_data))
     img = transform(img)
@@ -127,29 +112,10 @@ def classify_image(image_data, model, class_labels):
     _, predicted = torch.max(output, 1)
     predicted_class_index = predicted.item()
 
-    # targets = [ClassifierOutputTarget(1)]
-    # target_layers = [model.res2[-1]]  # instantiate the model
-
-    # cam = GradCAMPlusPlus(model=model, target_layers=target_layers)
-
     # Preprocess input image, get the input image tensor
     img = np.array(PIL.Image.open(io.BytesIO(image_data)))
     img = cv2.resize(img, (128, 128))
     img = np.float32(img) / 255
-    # input_tensor = preprocess_image(img)
-
-    # generate CAM
-    # grayscale_cams = cam(input_tensor=input_tensor, targets=targets)
-    # cam_image = show_cam_on_image(img, grayscale_cams[0, :], use_rgb=True)
-
-    # cam = np.uint8(255*grayscale_cams[0, :])
-    # cam = cv2.merge([cam, cam, cam])
-
-    # # display the original image & the associated CAM
-    # images = np.hstack((np.uint8(255*img), cam_image))
-    # images = PIL.Image.fromarray(cam_image)
-    # images.resize((1024, 1024))
-    # images.save('../node_modules/output_image.png')
 
     return class_labels[predicted_class_index]
 
@@ -161,6 +127,3 @@ async def create_upload_file(file: UploadFile = File(...)):
     return {"filename": file.filename,
             "prediction": prediction,
             }
-
-# if __name__ == "__main__":
-#     uvicorn.run(app, host="127.0.0.1", port=8000)

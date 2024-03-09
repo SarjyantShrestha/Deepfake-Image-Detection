@@ -27,3 +27,4 @@ yarn-error.log*
 /backend/output_image.png
 ./Pipfile
 Pipfile
+*.lock
